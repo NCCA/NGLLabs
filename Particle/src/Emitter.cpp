@@ -44,6 +44,10 @@ void Emitter::update()
 }
 void Emitter::draw() const
 {
+	if (m_particles.size() == 0)
+	{
+		return;
+	}
 	m_vao->bind();
 	m_vao->setData(ngl::SimpleVAO::VertexData(m_particles.size()*sizeof(Particle),
 		m_particles[0].pos.m_x));
@@ -78,8 +82,24 @@ void Emitter::in(float _dz)
 void Emitter::out(float _dz)
 {
 	m_pos.m_z += _dz;
-
 }
+
+void Emitter::addParticle()
+{
+	Particle p;
+	resetParticle(p);
+	m_particles.push_back(p);
+}
+void Emitter::removeParticle()
+{
+	if(m_particles.size() !=0)
+		m_particles.pop_back();
+}
+void Emitter::clearParticles()
+{
+	m_particles.clear();
+}
+
 
 
 

@@ -17,6 +17,9 @@ public :
 	void right(float _dy);
 	void in(float _dz);
 	void out(float _dz);
+	void addParticle();
+	void removeParticle();
+	void clearParticles();
 
 private :
 	void resetParticle(Particle& io_p);

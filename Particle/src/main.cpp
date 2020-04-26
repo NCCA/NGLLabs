@@ -30,7 +30,14 @@ int main(int argc, char **argv)
   // now set the depth buffer to 24 bits
   format.setDepthBufferSize(24);
   // now we are going to create our scene window
-  NGLScene window;
+  size_t numParticles = 1000;
+  if (argc == 2)
+  {
+      numParticles = std::atoi(argv[1]);
+      
+  }
+  std::cout << "number of particles " << numParticles << '\n';
+  NGLScene window(numParticles);
   // and set the OpenGL format
   window.setFormat(format);
   // we can now query the version to see if it worked

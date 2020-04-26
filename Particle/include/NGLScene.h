@@ -27,7 +27,7 @@ class NGLScene : public QOpenGLWindow
     /// @brief ctor for our NGL drawing class
     /// @param [in] parent the parent window to the class
     //----------------------------------------------------------------------------------------------------------------------
-    NGLScene();
+    NGLScene(size_t _numParticles);
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief dtor must close down ngl and release OpenGL resources
     //----------------------------------------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ private:
     ngl::Mat4 m_project;
     ngl::Mat4 m_globalMouseTX;
     std::unique_ptr<Emitter> m_emitter;
-
+    size_t m_numParticles;
 
 };
 
