@@ -29,6 +29,7 @@ int main(int argc, char **argv)
   format.setProfile(QSurfaceFormat::CoreProfile);
   // now set the depth buffer to 24 bits
   format.setDepthBufferSize(24);
+  format.setSwapInterval(0);
   // now we are going to create our scene window
   size_t numParticles = 1000;
   if (argc == 2)

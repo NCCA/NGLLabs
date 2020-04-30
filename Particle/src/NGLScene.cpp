@@ -63,7 +63,8 @@ void NGLScene::initializeGL()
   shader->setUniform("colour1", 0.7f, 0.7f, 0.7f, 1.0f);
   shader->setUniform("colour2", 0.8f, 0.8f, 0.8f, 1.0f);
   shader->setUniform("normalMatrix", ngl::Mat3());
-  startTimer(10);
+  startTimer(0);
+  m_previousTime = std::chrono::high_resolution_clock::now();
 }
 
 
@@ -85,7 +86,7 @@ void NGLScene::paintGL()
     m_globalMouseTX.m_m[3][2] = m_modelPos.m_z;
     shader->use("ParticleShader");
     shader->setUniform("MVP", m_project * m_view * m_globalMouseTX);
-    glPointSize(2);
+    glPointSize(3);
     
     m_emitter->draw();
     shader->use(ngl::nglCheckerShader);
@@ -101,6 +102,9 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
 {
   // this method is called every time the main window recives a key event.
   // we then switch on the key value and set the camera in the GLWindow
+
+  static float spread = 1.5f;
+  constexpr float move = 0.5f;
   switch (_event->key())
   {
   // escape key to quite
@@ -111,15 +115,21 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
       m_modelPos.set(ngl::Vec3::zero());
 
   break;
-  case Qt::Key_Left: m_emitter->left(5.0f); break;
-  case Qt::Key_Right: m_emitter->right(5.0f); break;
-  case Qt::Key_Up: m_emitter->up(5.0f); break;
-  case Qt::Key_Down: m_emitter->down(5.0f); break;
-  case Qt::Key_I: m_emitter->in(5.0f); break;
-  case Qt::Key_O: m_emitter->out(5.0f); break;
+  case Qt::Key_Left: m_emitter->left(move); break;
+  case Qt::Key_Right: m_emitter->right(move); break;
+  case Qt::Key_Up: m_emitter->up(move); break;
+  case Qt::Key_Down: m_emitter->down(move); break;
+  case Qt::Key_I: m_emitter->in(move); break;
+  case Qt::Key_O: m_emitter->out(move); break;
   case Qt::Key_1: m_emitter->addParticle(); break;
   case Qt::Key_2: m_emitter->removeParticle(); break;
+  case Qt::Key_3: spread -= 0.1f; m_emitter->changeSpread(spread); break;
+  case Qt::Key_4: spread += 0.1f; m_emitter->changeSpread(spread); break;
   case Qt::Key_R: m_emitter->clearParticles(); break;
+  case Qt::Key_T: m_emitter->resetParticles(); break;
+  case Qt::Key_Y: m_emitter->toggleSingleShot(); break;
+
+
   default : break;
   }
   // finally update the GLWindow and re-draw
@@ -129,7 +139,11 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
 
 void NGLScene::timerEvent(QTimerEvent*)
 {
-    m_emitter->update();
-    update();
+  auto currentTime = std::chrono::high_resolution_clock::now();
+  auto delta = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - m_previousTime).count();
+  std::cout << "delta time " << delta << '\n';
+  m_emitter->update(delta);
+  update();
+  m_previousTime = currentTime;
 }
 

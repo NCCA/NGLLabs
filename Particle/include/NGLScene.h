@@ -2,6 +2,7 @@
 #define NGLSCENE_H_
 #include <ngl/Vec3.h>
 #include <ngl/Mat4.h>
+#include <chrono>
 #include <memory>
 #include "Emitter.h"
 #include "WindowParams.h"
@@ -88,6 +89,7 @@ private:
     ngl::Mat4 m_globalMouseTX;
     std::unique_ptr<Emitter> m_emitter;
     size_t m_numParticles;
+    std::chrono::high_resolution_clock::time_point m_previousTime;
 
 };
 
