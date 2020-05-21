@@ -23,9 +23,11 @@ int main()
 
   //  Arena arena(20, 20);
   Arena arena("maps/map1.png");
-  arena.setItem(4, 4, ItemType::Player);
   SDL_Event event;
   bool quit = false;
+  int xDir = 0;
+  int yDir = 0;
+
   while (!quit)
   {
 
@@ -38,15 +40,31 @@ int main()
         switch (event.key.keysym.sym)
         {
           case SDLK_ESCAPE: quit = true; break;
-      
+          case SDLK_LEFT:  xDir = -1; break;
+          case SDLK_RIGHT: xDir = 1; break;
+          case SDLK_UP:    yDir = -1; break;
+          case SDLK_DOWN:  yDir =  1; break;
         }
       break; // end key down
+
+      case SDL_KEYUP:
+        switch (event.key.keysym.sym)
+        {
+          case SDLK_LEFT: xDir = 0; break;
+          case SDLK_RIGHT: xDir = 0; break;
+          case SDLK_UP: yDir = 0; break;
+          case SDLK_DOWN: yDir = 0; break;
+
+        }
+        break; // end key down
+
       }
     } // end poll event
 
-
+    arena.keyEvent(xDir, yDir);
     arena.update(0.1f);
     arena.draw();
+    SDL_Delay(10);
   } // end game loop
 
 
