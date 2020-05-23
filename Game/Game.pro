@@ -4,13 +4,19 @@ TARGET=Game
 OBJECTS_DIR=obj
 # core Qt Libs to use add more here if needed.
 QT+=gui opengl core
-
+CONFIG+=c++17
 # as I want to support 4.8 and 5 this will set a flag for some of the mac stuff
 # mainly in the types.h file for the setMacVisual which is native in Qt5
 isEqual(QT_MAJOR_VERSION, 5) {
 	cache()
 	DEFINES +=QT5BUILD
 }
+
+linux*:{
+INCLUDEPATH+=$$(HOME)/vcpkg/installed/x64-linux/include
+LIBS+=-Linstalled/x64-linux/lib -lSDL2
+}
+
 !win32:{
 # this demo uses SDL so add the paths using the sdl2-config tool
 QMAKE_CXXFLAGS+=$$system(sdl2-config  --cflags)
@@ -50,11 +56,18 @@ MOC_DIR=moc
 CONFIG-=app_bundle
 # Auto include all .cpp files in the project src directory (can specifiy individually if required)
 SOURCES+= $$PWD/src/main.cpp \
-          $$PWD/src/Arena.cpp
+          $$PWD/src/Arena.cpp \
+          $$PWD/src/Player.cpp \
+          $$PWD/src/GameObject.cpp \
+          $$PWD/src/RenderGlobals.cpp
+
+
 # same for the .h files
 HEADERS+= $$PWD/include/Arena.h \
           $$PWD/include/GameItem.h \
-          $$PWD/include/GameObject.h
+          $$PWD/include/Player.h \
+          $$PWD/include/GameObject.h  \
+          $$PWD/include/RenderGlobals.h
 
 
 # and add the include dir into the search path for Qt and make
