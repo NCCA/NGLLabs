@@ -67,6 +67,24 @@ void NGLScene::drawConnections()
   m_vao->unbind();
 }
 
+
+void NGLScene::drawPath()
+{
+  auto shader=ngl::ShaderLib::instance();
+  shader->setUniform("MVP",m_project*m_view);
+  shader->setUniform("Colour",1.0f,1.0f,0.0f,1.0f);
+
+  m_pathVAO->bind();
+  m_pathVAO->setData( ngl::SimpleVAO::VertexData(m_pathPoints.size()*sizeof(ngl::Vec3),m_pathPoints[0].m_x));
+  // We must do this each time as we change the data.
+  m_pathVAO->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
+  m_pathVAO->setNumIndices(m_pathPoints.size());
+  m_pathVAO->draw();
+  m_pathVAO->unbind();
+}
+
+
+
 void NGLScene::resizeGL(int _w , int _h)
 {
   m_win.width  = static_cast<int>( _w * devicePixelRatio() );
@@ -99,6 +117,7 @@ void NGLScene::initializeGL()
   findClosestSphere();
   // create the VAO but don't populate
   m_vao=ngl::VAOFactory::createVAO(ngl::simpleVAO,GL_LINES);
+  m_pathVAO=ngl::VAOFactory::createVAO(ngl::simpleVAO,GL_LINE_STRIP);
 
   startTimer(10);
 }
@@ -153,6 +172,7 @@ void NGLScene::paintGL()
   shader->setUniform("MVP",VP);
   shader->setUniform("Colour",0.3f,0.3f,0.3f,1.0f);
   ngl::VAOPrimitives::instance()->draw("floor");
+  drawPath();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -178,7 +198,7 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   case Qt::Key_Right : m_sphere.moveRelative(s_moveAmmount,0.0f,0.0f); break;
   case Qt::Key_Down : m_sphere.moveRelative(0.0f,0.0f,s_moveAmmount); break;
   case Qt::Key_Up : m_sphere.moveRelative(0.0f,0.0f,-s_moveAmmount); break;
-  case Qt::Key_R : m_collideObjects.clear(); scatterSpheres(m_numSpheres); break;
+  case Qt::Key_R : m_collideObjects.clear(); scatterSpheres(m_numSpheres); m_pathPoints.clear(); break;
   case Qt::Key_1 :
       m_view = ngl::lookAt({0.0f, 40.0f, 40.0f}, { 0.0f,0.0f,0.0f }, ngl::Vec3::up()); break;
   case Qt::Key_2 :
@@ -195,11 +215,17 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
 
 void NGLScene::timerEvent(QTimerEvent *)
 {
+  if(m_collideObjects.size() == 0)
+  {
+    return;
+  }
+
   findClosestSphere();
   auto dir=m_closestPos-m_sphere.getPos();
   dir.normalize();
 
   m_sphere.moveRelative(dir);
+  m_pathPoints.push_back(m_sphere.getPos());
   update();
 }
 

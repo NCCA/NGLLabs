@@ -28,7 +28,7 @@ class NGLScene : public QOpenGLWindow
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief ctor for our NGL drawing class
     //----------------------------------------------------------------------------------------------------------------------
-    NGLScene(int _numSpheres=300) ;
+    NGLScene(int _numSpheres=3000) ;
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief dtor must close down ngl and release OpenGL resources
     //----------------------------------------------------------------------------------------------------------------------
@@ -83,6 +83,7 @@ private:
     // load matrix to our shader
     void scatterSpheres(int _num);
     void drawConnections();
+    void drawPath();
     void findClosestSphere();
     ngl::Vec3 m_closestPos;
     ngl::Mat4 m_project;
@@ -96,7 +97,8 @@ private:
     int m_numSpheres=20;
     std::vector<Sphere> m_collideObjects;
     std::unique_ptr<ngl::AbstractVAO> m_vao;
-
+    std::unique_ptr<ngl::AbstractVAO> m_pathVAO;
+    std::vector<ngl::Vec3> m_pathPoints;
 
 
 };
